@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FOOTBALL Match Database</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f1626;
+            color: #ffffff;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, #1f4068, #2e9cca);
+            margin: 0;
+            font-size: 2em;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px #00cfff, 0 0 10px #00cfff;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background-color: #1b1b2f;
+        }
+
+        .tabs button {
+            padding: 15px 30px;
+            border: none;
+            background-color: #1b1b2f;
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        .tabs button:hover, .tabs button.active {
+            background-color: #2e9cca;
+            color: #ffffff;
+        }
+
+        .form-container {
+            display: none;
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #1a1a2e;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin: 10px 0 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        input[type="submit"] {
+            background-color: #2e9cca;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #3ec4ff;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(to right, #1f4068, #2e9cca);">
+        <div style="
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 8px rgba(0, 191, 255, 0.6);
+            margin-right: 15px;
+            flex-shrink: 0;
+        ">
+            <img src="logo.jpg" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <h1 style="margin: 0; font-size: 2em; letter-spacing: 2px; text-shadow: 0 0 5px #00cfff, 0 0 10px #00cfff; color: white;">
+            KICKFEED
+        </h1>
+    </div>
+    
+    <div class="tabs">
+        <button onclick="showForm('insert')" class="active">Insert Match</button>
+        <button onclick="showForm('update')">Update Match</button>
+        <button onclick="showForm('delete')">Delete Match</button>
+        <button onclick="showForm('display')">View Matches</button>
+    </div>
+
+    <div id="insert" class="form-container active">
+        <form action="MatchServlet" method="post">
+            <input type="hidden" name="action" value="insert">
+            <label>Team A:</label>
+            <input type="text" name="teamA" required>
+            <label>Team B:</label>
+            <input type="text" name="teamB" required>
+            <label>Score A:</label>
+            <input type="number" name="scoreA" required>
+            <label>Score B:</label>
+            <input type="number" name="scoreB" required>
+            <label>Venue:</label>
+            <input type="text" name="venue" required>
+            <label>Match Date:</label>
+            <input type="date" name="matchDate" required>
+            <input type="submit" value="Submit Match">
+        </form>
+    </div>
+
+    <div id="update" class="form-container">
+        <form action="MatchServlet" method="post">
+            <input type="hidden" name="action" value="update">
+            <label>Match ID:</label>
+            <input type="number" name="matchId" required>
+            <label>New Score A:</label>
+            <input type="number" name="scoreA" required>
+            <label>New Score B:</label>
+            <input type="number" name="scoreB" required>
+            <input type="submit" value="Update Match">
+        </form>
+    </div>
+
+    <div id="delete" class="form-container">
+        <form action="MatchServlet" method="post">
+            <input type="hidden" name="action" value="delete">
+            <label>Match ID:</label>
+            <input type="number" name="matchId" required>
+            <input type="submit" value="Delete Match">
+        </form>
+    </div>
+
+    <div id="display" class="form-container">
+        <form action="MatchServlet" method="post">
+            <input type="hidden" name="action" value="display">
+            <input type="submit" value="Show Matches">
+        </form>
+    </div>
+
+    <script>
+        function showForm(id) {
+            const forms = document.querySelectorAll('.form-container');
+            forms.forEach(f => f.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.tabs button');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
