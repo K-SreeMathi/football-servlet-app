@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
@@ -6,8 +5,7 @@
          version="4.0"
          metadata-complete="true">
 
-    <display-name>Welcome to Tomcat</display-name>
-    <description>Welcome to Tomcat</description>
+    <display-name>Football App</display-name>
 
     <servlet>
         <servlet-name>MatchServlet</servlet-name>
@@ -19,9 +17,7 @@
         <url-pattern>/MatchServlet</url-pattern>
     </servlet-mapping>
 
-    <!-- ✅ Add this part -->
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
-
 </web-app>
