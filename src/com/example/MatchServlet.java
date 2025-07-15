@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/MatchServlet")
 public class MatchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/FootballDB?useSSL=false&allowPublicKeyRetrieval=true";
-    private static final String JDBC_USER = "root";
-    private static final String JDBC_PASS = "sree";
+    private static final String JDBC_URL = System.getenv("DB_URL");
+	private static final String JDBC_USER = System.getenv("DB_USER");
+	private static final String JDBC_PASS = System.getenv("DB_PASS");
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
