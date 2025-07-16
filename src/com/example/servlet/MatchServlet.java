@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MatchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // Use separated environment variables (for Clever Cloud)
+    // Environment variables (Clever Cloud)
     private static final String DB_HOST = System.getenv("DB_HOST");
     private static final String DB_PORT = System.getenv("DB_PORT");
     private static final String DB_NAME = System.getenv("DB_NAME");
@@ -32,7 +32,6 @@ public class MatchServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         try {
-            // Use updated MySQL driver
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
 
@@ -55,8 +54,8 @@ public class MatchServlet extends HttpServlet {
 
             con.close();
         } catch (Exception e) {
+            out.println(buildHtmlPage("<h3 style='color:red;'>Error: " + e.getMessage() + "</h3>"));
             e.printStackTrace();
-            out.println("<h3 style='color:red;'>Error: " + e.getMessage() + "</h3>");
         }
     }
 
@@ -81,7 +80,10 @@ public class MatchServlet extends HttpServlet {
         stmt.setString(7, matchDate);
 
         int rows = stmt.executeUpdate();
-        out.println(rows > 0 ? "<h3 style='color:lightgreen;'>Match record inserted successfully!</h3>" : "<h3>Error inserting record.</h3>");
+        String message = rows > 0
+                ? "<h3 class='text-success'> Match inserted successfully!</h3>"
+                : "<h3 class='text-danger'> Failed to insert match.</h3>";
+        out.println(buildHtmlPage(message));
         stmt.close();
     }
 
@@ -101,7 +103,11 @@ public class MatchServlet extends HttpServlet {
         stmt.setInt(7, matchId);
 
         int rows = stmt.executeUpdate();
-        out.println(rows > 0 ? "<h3 style='color:orange;'>Match record updated successfully!</h3>" : "<h3>Error updating record.</h3>");
+        String message = rows > 0 
+			? "<h3 class='text-danger'>Match deleted successfully!</h3>" 
+			: "<h3 class='text-danger'>Match not found or deletion failed.</h3>";
+
+        out.println(buildHtmlPage(message));
         stmt.close();
     }
 
@@ -113,7 +119,10 @@ public class MatchServlet extends HttpServlet {
         stmt.setInt(1, matchId);
 
         int rows = stmt.executeUpdate();
-        out.println(rows > 0 ? "<h3 style='color:red;'>Match record deleted successfully!</h3>" : "<h3>Error deleting record.</h3>");
+        String message = rows > 0
+                ? "<h3 class='text-danger'>️Match deleted successfully!</h3>"
+                : "<h3 class='text-danger'> Match not found or deletion failed.</h3>";
+        out.println(buildHtmlPage(message));
         stmt.close();
     }
 
@@ -122,36 +131,52 @@ public class MatchServlet extends HttpServlet {
         Statement stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery(sql);
 
-        // Bootstrap grid layout
-        out.println("<div class='container mt-4'>");
-
-        out.println("<div class='row fw-bold text-white bg-primary py-2 rounded'>");
-        out.println("<div class='col-md-1'>ID</div>");
-        out.println("<div class='col-md-2'>Team A</div>");
-        out.println("<div class='col-md-2'>Team B</div>");
-        out.println("<div class='col-md-1'>Score A</div>");
-        out.println("<div class='col-md-1'>Score B</div>");
-        out.println("<div class='col-md-2'>Winner</div>");
-        out.println("<div class='col-md-2'>Venue</div>");
-        out.println("<div class='col-md-1'>Date</div>");
-        out.println("</div>");
+        StringBuilder html = new StringBuilder();
+        html.append("<h2 class='text-center mb-4'>Match Records</h2>");
+        html.append("<div class='container'>");
+        html.append("<div class='row fw-bold text-white bg-primary py-2 rounded'>");
+        html.append("<div class='col-md-1'>ID</div>");
+        html.append("<div class='col-md-2'>Team A</div>");
+        html.append("<div class='col-md-2'>Team B</div>");
+        html.append("<div class='col-md-1'>Score A</div>");
+        html.append("<div class='col-md-1'>Score B</div>");
+        html.append("<div class='col-md-2'>Winner</div>");
+        html.append("<div class='col-md-2'>Venue</div>");
+        html.append("<div class='col-md-1'>Date</div>");
+        html.append("</div>");
 
         while (rs.next()) {
-            out.println("<div class='row text-white border-bottom py-2' style='border-color: rgba(255,255,255,0.2);'>");
-            out.println("<div class='col-md-1'>" + rs.getInt("id") + "</div>");
-            out.println("<div class='col-md-2'>" + rs.getString("team_a") + "</div>");
-            out.println("<div class='col-md-2'>" + rs.getString("team_b") + "</div>");
-            out.println("<div class='col-md-1'>" + rs.getInt("score_a") + "</div>");
-            out.println("<div class='col-md-1'>" + rs.getInt("score_b") + "</div>");
-            out.println("<div class='col-md-2'>" + rs.getString("winner") + "</div>");
-            out.println("<div class='col-md-2'>" + rs.getString("venue") + "</div>");
-            out.println("<div class='col-md-1'>" + rs.getDate("match_date") + "</div>");
-            out.println("</div>");
+            html.append("<div class='row text-white border-bottom py-2' style='border-color: rgba(255,255,255,0.2);'>");
+            html.append("<div class='col-md-1'>" + rs.getInt("id") + "</div>");
+            html.append("<div class='col-md-2'>" + rs.getString("team_a") + "</div>");
+            html.append("<div class='col-md-2'>" + rs.getString("team_b") + "</div>");
+            html.append("<div class='col-md-1'>" + rs.getInt("score_a") + "</div>");
+            html.append("<div class='col-md-1'>" + rs.getInt("score_b") + "</div>");
+            html.append("<div class='col-md-2'>" + rs.getString("winner") + "</div>");
+            html.append("<div class='col-md-2'>" + rs.getString("venue") + "</div>");
+            html.append("<div class='col-md-1'>" + rs.getDate("match_date") + "</div>");
+            html.append("</div>");
         }
-
-        out.println("</div>"); // Close container
 
         rs.close();
         stmt.close();
+
+        out.println(buildHtmlPage(html.toString()));
+    }
+
+    // 🔄 Common method to build full HTML with Bootstrap + back button
+    private String buildHtmlPage(String bodyContent) {
+        return "<!DOCTYPE html><html><head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1'>" +
+                "<title>Football Match Response</title>" +
+                "<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>" +
+                "<style>body { background-color: #111; color: white; padding: 2rem; }</style>" +
+                "</head><body>" +
+                "<div class='container'>" +
+                bodyContent +
+                "<div class='text-center mt-4'>" +
+                "<a href='index.html' class='btn btn-outline-light'>Back to Home</a>" +
+                "</div></div></body></html>";
     }
 }
