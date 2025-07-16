@@ -13,10 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 public class MatchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // Use environment variables for secure deployment (set in Render dashboard)
-    private static final String JDBC_URL = System.getenv("DB_URL"); // e.g., jdbc:mysql://host:3306/dbname?params
-    private static final String JDBC_USER = System.getenv("DB_USER");
-    private static final String JDBC_PASS = System.getenv("DB_PASS");
+    // Use separated environment variables (for Clever Cloud)
+    private static final String DB_HOST = System.getenv("DB_HOST");
+    private static final String DB_PORT = System.getenv("DB_PORT");
+    private static final String DB_NAME = System.getenv("DB_NAME");
+    private static final String DB_USER = System.getenv("DB_USER");
+    private static final String DB_PASS = System.getenv("DB_PASS");
+
+    private static final String JDBC_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME +
+            "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -27,8 +32,9 @@ public class MatchServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         try {
+            // Use updated MySQL driver
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASS);
+            Connection con = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
 
             switch (action.toLowerCase()) {
                 case "insert":
